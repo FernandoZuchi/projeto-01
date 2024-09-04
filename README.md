@@ -1,6 +1,20 @@
 # Documento de Requisitos do Sistema de Gerenciamento de Projetos
 
-Esta documentação tem como objetivo detalhar os requisitos para o desenvolvimento de um Sistema de Gerenciamento de Projetos. Este sistema será usado para gerenciar projetos, tarefas, e membros da equipe, facilitando a comunicação e o acompanhamento do progresso.
+Esta documentação tem como objetivo detalhar os requisitos para o desenvolvimento de um <strong>Sistema de Gerenciamento de Projetos (SGP).</strong> O sistema será uma aplicação web completa, com backend e frontend integrados, projetada para facilitar a gestão de projetos e usuários/colaboradores. 
+
+## Objetivo
+
+O objetivo principal do Sistema de Gerenciamento de Projetos é fornecer uma plataforma intuitiva e robusta para a administração de projetos. Através do SGP, os usuários poderão criar, editar, visualizar e remover projetos, além de gerenciar usuários vinculados a esses projetos, categorizando-os por seus papéis específicos.
+
+
+## Tecnologias obrigatórias
+- **Node JS (API REST)**
+- **React JS**
+- **Typescript**
+- **MySQL**
+- **JWT**
+- **GIT**
+  
 
 ## Estrutura do Projeto 
 
@@ -30,35 +44,33 @@ data_fim: date
 status: varchar (ex: 'Em andamento', 'Concluído', 'Pendente')
 ```
 
-Tarefas:
-```
-id: integer
-projeto_id: fk (projetos)
-nome: varchar
-descricao: text
-data_inicio: date
-data_fim: date
-status: varchar (ex: 'Em andamento', 'Concluída', 'Pendente')
-responsavel_id: fk (usuarios)
-```
-
 Usuários:
 ```
 id: integer
 nome: varchar
 email: varchar
 senha: varchar
-papel: varchar (ex: 'Gerente', 'Desenvolvedor')
+papel: varchar (ex: 'Gerente', 'Desenvolvedor', 'Designer')
+```
+
+Projetos_Usuários:
+```
+usuario_id: integer (referência ao usuário)
+projeto_id: integer (referência ao projeto)
 ```
 
 # **Backend** 
 
-O backend será responsável por fornecer uma API RESTful que permitirá a interação com os dados do sistema. A API terá endpoints para realizar operações CRUD (Create, Read, Update, Delete) em projetos, tarefas e usuários
+O backend será responsável por fornecer uma API RESTful que permitirá a interação com os dados do sistema. A API terá endpoints para realizar operações CRUD (Create, Read, Update, Delete) em projetos e usuários além da autenticação do login e registro de usuários usando JWT.
 
 # **Estrutura do Backend**
 
-Diretório backend: Contém o código do servidor.
-Container (opcional): Para facilitar a execução e o isolamento do ambiente.
+- Diretório backend: Contém o código do servidor.
+- Container (opcional): Para facilitar a execução e o isolamento do ambiente.
+
+## Observação
+
+Solicitamos que façam o uso do Node JS em uma versão 18 ou superior
 
 ## Endpoints da API 
 
@@ -83,7 +95,7 @@ Esperamos os seguintes endpoints da API para este primeiro projeto:
   ]
   ```
 
-  - **Resposta de Erro (404):** Retorna uma mensagem indicando que nenhum projeto foi encontrado..
+  - **Resposta de Erro (404):** Retorna uma mensagem indicando que nenhum projeto foi encontrado.
  
     
 
@@ -100,12 +112,12 @@ Esperamos os seguintes endpoints da API para este primeiro projeto:
   }
   ```
 
-  - **Resposta de Sucesso (201):** Retorna o novo projeto criado.
+  - **Resposta de Sucesso (200):** Retorna o novo projeto criado.
   - **Resposta de Erro (400):** Retorna uma mensagem indicando que o corpo da requisição está incorreto.
  
     
 
-- **Editar Projeto (PUT/PATCH):** `/api/projetos/:id`
+- **Editar Projeto (PUT):** `/api/projetos/:id`
 
   - **Corpo da Requisição:**
 
@@ -121,92 +133,19 @@ Esperamos os seguintes endpoints da API para este primeiro projeto:
 
   - **Resposta de Sucesso (200):** Retorna o projeto atualizado.
   - **Resposta de Erro (400):** Retorna uma mensagem indicando que o corpo da requisição está incorreto.
+    
 
 - **Remover Projeto (DELETE):** `/api/projetos/:id`
-  - **Resposta de Sucesso (204):** Confirma que o projeto foi removido com sucesso. Não retorna corpo..
+  - **Resposta de Sucesso (204):** Confirma que o projeto foi removido com sucesso.
   - **Resposta de Erro (400):** Retorna uma mensagem indicando problemas na remoção.
- 
-    
-
-### **Tarefas**
-
-- **Listar Tarefas (GET):** `/api/tarefas`
-
-  - **Resposta de Sucesso (200):** Retorna um array com as tarefas.
-
-  ```json
-  [
-    {
-      "id": 1,
-      "projeto_id": 1,
-      "nome": "Nome da Tarefa",
-      "descricao": "Descrição da Tarefa",
-      "data_inicio": "2024-01-01",
-      "data_fim": "2024-01-31",
-      "status": "Em andamento",
-      "responsavel_id": 1
-    },
-    ...
-  ]
-  ```
-
-  - **Resposta de Erro (404):** Retorna uma mensagem indicando que nenhuma tarefa foi encontrada..
- 
-    
-
-- **Cadastrar Tarefa (POST):** `/api/tarefas`
-
-  - **Corpo da Requisição:**
-
-  ```json
-  {
-    "projeto_id": 1,
-    "nome": "Nome da Tarefa",
-    "descricao": "Descrição da Tarefa",
-    "data_inicio": "2024-01-01",
-    "data_fim": "2024-01-31",
-    "status": "Em andamento",
-    "responsavel_id": 1
-  }
-  ```
-
-  - **Resposta de Sucesso (201):** Retorna a tarefa criada..
-  - **Resposta de Erro (400):** Retorna uma mensagem indicando que o corpo da requisição está incorreto..
- 
-    
-
-- **Editar Tarefa (PUT/PATCH):** `/api/tarefas/:id`
-
-  - **Corpo da Requisição:**
-
-  ```json
-  {
-    "nome": "Novo Nome da Tarefa",
-    "descricao": "Nova Descrição da Tarefa",
-    "data_inicio": "2024-01-01",
-    "data_fim": "2024-01-31",
-    "status": "Concluída",
-    "responsavel_id": 2
-  }
-  ```
-
-  - **Resposta de Sucesso (200):** Retorna a tarefa atualizada.
-  - **Resposta de Erro (400):** Retorna uma mensagem indicando que o corpo da requisição está incorreto.
- 
-    
-
-- **Remover Tarefa (DELETE):** `/api/tarefa/:id`
-  - **Resposta de Sucesso (204):** Confirma que a tarefa foi removida com sucesso.
-  - **Resposta de Erro (400):** Retorna uma mensagem indicando problemas na remoção..
- 
     
 
 
-### **Usuários**
+### **Usuários em Projetos**
 
-- **Listar Tarefas (GET):** `/api/usuarios`
+- **Listar usuários em um projeto (GET):** `/api/projetos/{projetoId}/usuarios`
 
-  - **Resposta de Sucesso (200):** Retorna um array com os usuários.
+  - **Resposta de Sucesso (200):** Retorna a lista de usuários vinculados ao projeto.
 
   ```json
   [
@@ -216,15 +155,36 @@ Esperamos os seguintes endpoints da API para este primeiro projeto:
       "email": "email@exemplo.com",
       "papel": "Desenvolvedor"
     },
-    ...
   ]
   ```
 
-  - **Resposta de Erro (404):** Retorna uma mensagem indicando que nenhum usuário foi encontrado.
+  - **Resposta de Erro (404):** Retorna uma mensagem indicando que nenhum usuário foi encontrado para o projeto especificado..
  
     
 
-- **Cadastrar Usuário (POST):** `/api/usuarios`
+- **Cadastrar Usuário em Projeto (POST):** `/api/projetos/{projetoId}/usuarios`
+
+  - **Corpo da Requisição:**
+
+  ```json
+  {
+    "usuario_id": 1
+  }
+  ```
+
+  - **Resposta de Sucesso (201):** Retorna o usuário adicionado ao projeto.
+  - **Resposta de Erro (400):** Retorna uma mensagem indicando que o corpo da requisição está incorreto.
+
+    
+    
+- **Remover Usuário em Projeto (DELETE):** `/api/projetos/{projetoId}/usuarios/{usuarioId}`
+  - **Resposta de Sucesso (204):** Confirma que o usuário foi removido do projeto com sucesso.
+  - **Resposta de Erro (400):** Retorna uma mensagem indicando problemas na remoção.
+
+
+### **Autenticação**
+
+- **Registrar novo usuário (POST):** `/api/auth/register`
 
   - **Corpo da Requisição:**
 
@@ -237,78 +197,82 @@ Esperamos os seguintes endpoints da API para este primeiro projeto:
   }
   ```
 
-  - **Resposta de Sucesso (201):** Retorna o usuário criado.
-  - **Resposta de Erro (400):** Retorna uma mensagem indicando que o corpo da requisição está incorreto.
+  - **Resposta de Sucesso (201):** Usuário criado com sucesso:
     
-    
-
-- **Editar Usuário (PUT/PATCH):** `/api/usuarios/:id`
-
-  - **Corpo da Requisição:**
-
   ```json
   {
-    "nome": "Novo Nome do Usuário",
-    "email": "novoemail@exemplo.com",
-    "senha": "novasenha123",
-    "papel": "Gerente”
+    "id": 1, 
+    "nome": "Nome do Usuário", 
+    "email": "email@exemplo.com", 
+    "papel": "Desenvolvedor", 
+    "token": "jwt_token" 
   }
   ```
 
-  - **Resposta de Sucesso (200):** Retorna o usuário atualizado.
-  - **Resposta de Erro (400):** Retorna uma mensagem indicando que o corpo da requisição está incorreto.
-    
+  - **Resposta de Erro (400):** Dados inválidos ou usuário já existente.
 
-    
-- **Remover Usuário (DELETE):** `/api/usuarios/:id`
-  - **Resposta de Sucesso (204):** Confirma que o usuário foi removido com sucesso
-  - **Resposta de Erro (400):** Retorna uma mensagem indicando problemas na remoção.
+- **Realizar login de usuário (POST): ** `/api/auth/login`
 
+  - **Resposta de Sucesso (201):** Retorna um token JWT válido:
+  - **Resposta de Erro (400):** Credenciais inválidas.
+
+- **Retornar dados do usuário autenticado (GET):** `/api/auth/me`
+
+  - **Resposta de Sucesso (201):** Retorna os dados do usuário autenticado:
+  - **Resposta de Erro (400):** Token inválido ou não fornecido.
 
 
 # **Frontend** 
 
-O frontend será uma SPA (Single Page Application) que interage com a API para fornecer uma interface de usuário intuitiva. A aplicação permitirá visualizar, adicionar, editar e remover projetos, tarefas e usuários.
+O frontend será uma SPA (Single Page Application) que interage com a API criada para fornecer uma interface de usuário intuitiva. A interface permitirá logar/cadastrar no sistema, visualizar, adicionar, editar e remover projetos e visualizar, adicionar, editar e remover usuários em projetos. 
+
+# **Estrutura do Frontend**
+
+- Diretório Frontend: Contém o código da interface do usuário.
+- Container (opcional): Para isolar o ambiente de desenvolvimento do frontend.
+
 
 ## **Páginas:**
 
-  - **Projetos**:
+  - **Cadastro**:
+      - Registro de novos usuários no sistema.
+   
+  - **Login**:
+      - Permitirá a autenticação de usuários.
+
+  - **Gestão de Projetos**:
     - Listagem: Tabela com os projetos cadastrados, com opções de adicionar, editar e remover.
     - Cadastro/Edição: Formulário para cadastro ou edição de projetos, pode ser uma modal ou uma página separada.
     - Exclusão: Confirmação antes de excluir um projeto.
-
-
-  - **Tarefas**:
-    - Listagem: Tabela com as tarefas cadastradas, com opções de adicionar, editar e remover.
-    - Cadastro/Edição: Formulário para cadastro ou edição de tarefas, pode ser uma modal ou uma página separada.
-    - Exclusão: Confirmação antes de excluir uma tarefa.
    
-  - **Usuários**:
-    - Listagem: Tabela com os usuários cadastrados, com opções de adicionar, editar e remover.
-    - Cadastro/Edição: Formulário para cadastro ou edição de usuários, pode ser uma modal ou uma página separada.
-    - Exclusão: Confirmação antes de excluir um usuário.
-
-
+  - **Gestão de Usuários em Projetos**:
+    - Listagem de Usuários em Projetos: Tabela com os usuários vinculados ao projeto, com opções de adicionar, editar e remover.
+    - Cadastro: Formulário para associação de um usuário ao projeto.
+    - Exclusão: Confirmação antes de excluir um usuário de um projeto.
 
 
 ## O que será avaliado? 
 
 No geral, tudo será avaliado. Porém nosso foco é descobrir como você aplica os conceitos da programação nos seus projetos, como você soluciona problemas e como irá gerar valor ao produto desenvolvido.
 
-Estamos de olho em: 🔎
-
 - Estrutura do Código: Organização e clareza do código.
 - Cumprimento de Requisitos: Atendimento aos requisitos especificados.
 - Lógica de Programação: Soluções implementadas e sua eficiência.
 - Metodologia Aplicada: Abordagem para resolver problemas e entregar valor.
-- Documentação: Qualidade e clareza da documentação fornecida.
+- Criatividade: Criatividade na solução dos requisitos propostos.
 
+## Entrega
+
+Faça o projeto calmamente e organizadamente! E após finaliza-lo envie-nos e aguarde a correção.
+
+- **OBS**: Faça commits claros e descritivos, estaremos atentos a cada detalhe do seu desenvolvimento.
 
 ## Checklist 📝
 
 Abaixo estão as implementações que terão de ser feitas no seu projeto. Quanto mais itens você entregar, melhor será sua avaliação. Utilize este checklist como um guia e faça os itens que conseguir.
 
-Os itens estão separados por níveis, e o nível 1 é o mínimo que esperamos que vocês entreguem
+Os itens estão separados por níveis, e o nível 1 é o mínimo que esperamos que vocês entreguem. Considerem diferenciais para este primeiro projeto itens do nível 2 em diante.
+
 
 ---
 
@@ -327,43 +291,34 @@ Os itens estão separados por níveis, e o nível 1 é o mínimo que esperamos q
 | [ ] | Cadastrar um projeto       |  F B  |
 | [ ] | Editar um projeto          |  F B  |
 | [ ] | Remover um projeto         |  F B  |
-| [ ] | Listar tarefas             |  F B  |
-| [ ] | Cadastrar uma tarefa       |  F B  |
-| [ ] | Editar uma tarefa          |  F B  |
-| [ ] | Remover uma tarefa         |  F B  |
-| [ ] | Listar usuários            |  F B  |
-| [ ] | Cadastrar um usuário       |  F B  |
-| [ ] | Editar um usuário          |  F B  |
-| [ ] | Remover um usuário         |  F B  |
+| [ ] | Listar usuários em projetos             |  F B  |
+| [ ] | Cadastrar usuários em projetos       |  F B  |
+| [ ] | Remover usuários em projetos         |  F B  |
+| [ ] | Tipagem de dados           |  F B  |
+| [ ] | Registro de usuários no sistema     |  F B  |
+| [ ] | Autenticação via login         |  F B  |
+| [ ] | Validações de campos     |  F B  |
 
 
 ### Nível 2
 
 |     | Descrição	                                            | Local |
 | --- | ------------------------------------------------      | ----- |
-| [ ] | Impedir remoção de projeto com tarefas associadas	    |   B   
-| [ ] | Adicionar busca via query para a listagem de projetos	|  F B  |
-| [ ] | Adicionar busca via query para a listagem de tarefas	|  F B  |
-| [ ] | Adicionar busca via query para a listagem de usuários	|  F B  |
 | [ ] |	Tratamento de exceções / Retornos erros concisos	    |  F B  |
-| [ ] | Paginação na listagem de projetos	                    |  F B  |
-| [ ] | Paginação na listagem de tarefas	                    |  F B  |
-| [ ] | Paginação na listagem de usuários	                    |  F B  |
 | [ ] | Mensagens de sucesso e/ou erros	                      |  F   |
+| [ ] | Impedir remoção de projetos não concluídos            |   B   |
+| [ ] | Paginação na listagem de projetos	                    |  F B  |
+| [ ] | Paginação na listagem de usuários	                    |  F B  |
 | [ ] | Confirmação para exclusão de itens	                  |  F   |
-| [ ] | Ordenação das tabelas clicando no nome da coluna	    |   B  |
-| [ ] | Validações de campos	                                |  F B  |
-| [ ] | Na página de projetos, adicionar uma coluna com a qtde de tarefas associadas |  F   |
+
 
 ### Nível 3
 
 |     | Descrição                              | Local |
 | --- | -------------------------------------- | ----- |
-| [ ] | Tipagem de dados                       |  F B  |
+| [ ] | Testes de integração                   |    B  |
 | [ ] | Organização e estrutura de pastas      |  F B  |
 | [ ] | Clean Code                             |  F B  |
-| [ ] | Testes unitários                       |  F B  |
-| [ ] | Documentação/Apresentação do Código    |  F B  |
 
 ### Nível 4
 
